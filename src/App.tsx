@@ -5,7 +5,7 @@ function App() {
         <h1 className="text-4xl font-heading font-bold text-primary-600 mb-2">
           Mosadie Gives Back
         </h1>
-        <p className="text-gray-600">Configuration complete and ready to go!</p>
+        <p className="text-gray-600">Database Connection Created</p>
       </div>
     </div>
   )
