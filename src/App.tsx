@@ -1,13 +1,49 @@
+import { Routes, Route } from 'react-router-dom'
+import { ProtectedRoute } from '@components/common/ProtectedRoute'
+import { HomePage } from '@pages/HomePage'
+import { LoginPage } from '@pages/LoginPage'
+import { GalleryPage } from '@pages/GalleryPage'
+import { OurStoryPage } from '@pages/OurStoryPage'
+import { ContactPage } from '@pages/ContactPage'
+import { VolunteerPage } from '@pages/VolunteerPage'
+import { DonationsPage } from '@pages/DonationsPage'
+import { ProjectsPage } from '@pages/ProjectsPage'
+import { AdminDashboard } from '@pages/AdminDashboard'
+import { EmployeeActions } from '@pages/EmployeeActions'
+import { NotFoundPage } from '@pages/NotFoundPage'
+
 function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center">
-      <div className="bg-white rounded-lg shadow-2xl p-8">
-        <h1 className="text-4xl font-heading font-bold text-primary-600 mb-2">
-          Mosadie Gives Back
-        </h1>
-        <p className="text-gray-600">Database Connection Created</p>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/gallery" element={<GalleryPage />} />
+      <Route path="/our-story" element={<OurStoryPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/volunteer" element={<VolunteerPage />} />
+      <Route path="/donations" element={<DonationsPage />} />
+      <Route path="/projects" element={<ProjectsPage />} />
+
+      <Route
+        path="/admin/dashboard"
+        element={
+          <ProtectedRoute requiredRole="employee">
+            <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin/employee-actions"
+        element={
+          <ProtectedRoute requiredRole="admin">
+            <EmployeeActions />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route path="*" element={<NotFoundPage />} />
+    </Routes>
   )
 }
 
