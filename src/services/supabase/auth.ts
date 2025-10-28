@@ -8,15 +8,30 @@ import { supabase } from './client'
 import type { User, UserRole } from '@/types/index'
 
 export const authService = {
-  // Sign in with email and password
+  // Sign in with email and password - fire and forget approach
   async signIn(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    // Fire the sign in request but don't await it
+    supabase.auth.signInWithPassword({ email, password })
 
-    if (error) throw error
-    return data
+    // Immediately start checking for session
+    let attempts = 0
+    const maxAttempts = 20
+
+    while (attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 500))
+
+      const { data } = await supabase.auth.getSession()
+
+      if (data.session?.user) {
+        // Success - we have a session
+        return { session: data.session, user: data.session.user }
+      }
+
+      attempts++
+    }
+
+    // If we get here, sign in failed
+    throw new Error('Sign in failed - please check your credentials')
   },
 
   // Sign out current user
@@ -25,7 +40,7 @@ export const authService = {
     if (error) throw error
   },
 
-  // Get current session
+  // Get current session - simple and direct
   async getSession() {
     const { data, error } = await supabase.auth.getSession()
     if (error) throw error
@@ -34,27 +49,29 @@ export const authService = {
 
   // Get current user with role from database
   async getCurrentUser(): Promise<User | null> {
-    const session = await this.getSession()
+    const { data } = await supabase.auth.getSession()
+    const session = data.session
+
     if (!session?.user) return null
 
-    // Fetch user details including role from users table
-    const { data, error } = await supabase
+    // Query users table for role
+    const { data: userData, error } = await supabase
       .from('users')
       .select('*')
       .eq('id', session.user.id)
       .single()
 
-    if (error || !data) return null
+    if (error || !userData) return null
 
     return {
-      id: data.id,
-      email: data.email,
-      role: data.role as UserRole,
-      firstName: data.first_name,
-      lastName: data.last_name,
-      phone: data.phone ?? undefined,
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
+      id: userData.id,
+      email: userData.email,
+      role: userData.role as UserRole,
+      firstName: userData.first_name,
+      lastName: userData.last_name,
+      phone: userData.phone ?? undefined,
+      createdAt: userData.created_at,
+      updatedAt: userData.updated_at,
     }
   },
 
@@ -62,13 +79,8 @@ export const authService = {
   async hasRole(requiredRole: UserRole): Promise<boolean> {
     const user = await this.getCurrentUser()
     if (!user) return false
-
-    // Admin has access to everything
     if (user.role === 'admin') return true
-
-    // Employee can access employee features
     if (requiredRole === 'employee' && user.role === 'employee') return true
-
     return user.role === requiredRole
   },
 

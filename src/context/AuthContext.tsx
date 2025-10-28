@@ -29,30 +29,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check for existing session on mount
-    const initializeAuth = async () => {
-      try {
-        const currentUser = await authService.getCurrentUser()
-        setUser(currentUser)
-      } catch (error) {
-        console.error('Error initializing auth:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    initializeAuth()
-
-    // Listen for auth state changes
-    const { data: listener } = authService.onAuthStateChange(currentUser => {
-      setUser(currentUser)
-      setLoading(false)
-    })
-
-    // Cleanup subscription on unmount
-    return () => {
-      listener?.subscription.unsubscribe()
-    }
+    authService.getCurrentUser().then(setUser).finally(() => setLoading(false))
   }, [])
 
   const signIn = async (email: string, password: string) => {
@@ -60,23 +37,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       await authService.signIn(email, password)
       const currentUser = await authService.getCurrentUser()
+      
+      if (!currentUser) {
+        throw new Error('User profile not found')
+      }
+      
       setUser(currentUser)
-    } catch (error) {
-      console.error('Sign in error:', error)
-      throw error
     } finally {
       setLoading(false)
     }
   }
 
   const signOut = async () => {
-    try {
-      await authService.signOut()
-      setUser(null)
-    } catch (error) {
-      console.error('Sign out error:', error)
-      throw error
-    }
+    await authService.signOut()
+    setUser(null)
   }
 
   const value: AuthContextType = {
@@ -94,7 +68,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 export function useAuth() {
   const context = useContext(AuthContext)
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
