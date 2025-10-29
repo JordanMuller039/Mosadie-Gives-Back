@@ -7,23 +7,27 @@ import { Link } from 'react-router-dom'
 import { Carousel } from '@components/common/Carousel'
 import { Heart, Users, Target } from 'lucide-react'
 
-// Import images - you'll need to add these files to src/assets/images/home/
-// For now using placeholder paths
+// Import carousel images
+import mainShot from '@/assets/images/Main_Shot.jpg'
+import outside from '@/assets/images/Outside.jpg'
+import outside2 from '@/assets/images/Outside_2.jpg'
+import tableFood from '@/assets/images/Table_food.jpg'
+
 const carouselImages = [
   {
-    src: '/src/assets/images/home/Main_Shot.jpg',
+    src: mainShot,
     alt: 'Children receiving meals',
   },
   {
-    src: '/src/assets/images/home/Outside.jpg',
+    src: outside,
     alt: 'Community outreach',
   },
   {
-    src: '/src/assets/images/home/Outside_2.jpg',
+    src: outside2,
     alt: 'Volunteers at work',
   },
   {
-    src: '/src/assets/images/home/Table_food.jpg',
+    src: tableFood,
     alt: 'Prepared meals',
   },
 ]
