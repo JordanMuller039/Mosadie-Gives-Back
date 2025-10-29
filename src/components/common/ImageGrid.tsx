@@ -43,58 +43,61 @@ export function ImageGrid({ images }: ImageGridProps) {
         ))}
       </div>
 
-      {/* Lightbox Modal */}
-    {selectedImage !== null && images[selectedImage] && (
+    {/* Lightbox Modal */}
+{selectedImage !== null && (() => {
+  const currentImage = images[selectedImage]
+  if (!currentImage) return null
+  
+  return (
     <motion.div
-        className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={() => setSelectedImage(null)}
+      className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={() => setSelectedImage(null)}
     >
-        <button
+      <button
         onClick={() => setSelectedImage(null)}
         className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
-        >
+      >
         <X size={32} />
-        </button>
+      </button>
 
-        <button
+      <button
         onClick={e => {
-            e.stopPropagation()
-            setSelectedImage(prev => (prev !== null && prev > 0 ? prev - 1 : images.length - 1))
+          e.stopPropagation()
+          setSelectedImage(prev => (prev !== null && prev > 0 ? prev - 1 : images.length - 1))
         }}
         className="absolute left-4 text-white hover:text-gray-300 transition-colors text-6xl font-thin z-10"
-        >
+      >
         ‹
-        </button>
+      </button>
 
-        {selectedImage !== null && images[selectedImage] && (
-        <motion.img
-            key={selectedImage}
-            src={images[selectedImage].src}
-            alt={images[selectedImage].alt}
-            className="max-h-[90vh] max-w-[90vw] object-contain"
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            onClick={e => e.stopPropagation()}
-        />
-        )}
+      <motion.img
+        key={selectedImage}
+        src={currentImage.src}
+        alt={currentImage.alt}
+        className="max-h-[90vh] max-w-[90vw] object-contain"
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+        onClick={e => e.stopPropagation()}
+      />
 
-        <button
+      <button
         onClick={e => {
-            e.stopPropagation()
-            setSelectedImage(prev =>
+          e.stopPropagation()
+          setSelectedImage(prev =>
             prev !== null && prev < images.length - 1 ? prev + 1 : 0
-            )
+          )
         }}
         className="absolute right-4 text-white hover:text-gray-300 transition-colors text-6xl font-thin z-10"
-        >
+      >
         ›
-        </button>
-    </motion.div>
-    )}
+          </button>
+        </motion.div>
+      )
+    })()}
     </>
   )
 }
