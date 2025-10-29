@@ -8,7 +8,7 @@ import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, Clock } from 'lucide-react'
 
 // Import contact image
-import kidsImage from '@/assets/images/Kids_5.jpg'
+import kidsImage from '@/assets/images/Dishing_Food_3.jpg'
 
 export function ContactPage() {
   const fadeInUp = {
@@ -97,13 +97,17 @@ return (
                 </div>
 
                 <div className="flex items-start gap-4">
-                  <Clock className="w-5 h-5 text-black mt-1 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900">Operating Hours</p>
-                    <p className="text-gray-600">Monday - Friday: 9:00 AM - 5:00 PM</p>
-                    <p className="text-gray-600">Saturday: 10:00 AM - 2:00 PM</p>
-                  </div>
+                <Clock className="w-5 h-5 text-black mt-1 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-gray-900">Operating Hours</p>
+                  <p className="text-gray-600">Monday: 9:00 AM - 5:00 PM</p>
+                  <p className="text-gray-600">Tuesday: 6:30 AM - 11:00 AM</p>
+                  <p className="text-gray-600">Wednesday: 6:30 AM - 6:00 PM</p>
+                  <p className="text-gray-600">Thursday: 6:30 AM - 6:00 AM</p>
+                  <p className="text-gray-600">Friday: 6:30 AM - 11:00 AM</p>
+                  <p className="text-gray-600">Saturday - Sunday: Closed</p>
                 </div>
+              </div>
               </div>
             </div>
           </motion.div>
