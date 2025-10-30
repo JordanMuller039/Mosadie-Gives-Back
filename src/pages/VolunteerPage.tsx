@@ -6,6 +6,7 @@ Users can apply to become volunteers and help with our mission.
 import { VolunteerForm } from '@components/forms/VolunteerForm'
 import { motion } from 'framer-motion'
 import { Heart, Users, Calendar, Award } from 'lucide-react'
+import { PageTitle } from '@components/common/PageTitle'
 
 export function VolunteerPage() {
   const fadeInUp = {
@@ -15,6 +16,7 @@ export function VolunteerPage() {
 
   return (
     <div className="bg-white">
+      <PageTitle title="Volunteer" />
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-gray-50 to-white py-16 md:py-20">
         <div className="container-custom">

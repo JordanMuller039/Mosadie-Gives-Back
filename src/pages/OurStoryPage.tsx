@@ -5,6 +5,7 @@ Features animated sections, team profiles, and engaging visuals.
 
 import { AnimatedHero } from '@/components/ui/animated-hero'
 import { motion } from 'framer-motion'
+import { PageTitle } from '@components/common/PageTitle'
 
 // Team member images
 import faranaazImage from '@/assets/images/Faranaaz_dramat.png'
@@ -45,6 +46,7 @@ const fadeInUp = {
 export function OurStoryPage() {
   return (
     <div className="bg-white">
+      <PageTitle title="About Us" />
       {/* Animated Hero */}
       <AnimatedHero
         titles={['compassionate', 'dedicated', 'impactful', 'life-changing', 'transformative']}

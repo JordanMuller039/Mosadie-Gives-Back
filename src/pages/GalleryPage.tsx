@@ -5,6 +5,7 @@ Features a responsive image grid with lightbox functionality.
 
 import { ImageGrid } from '@components/common/ImageGrid'
 import { motion } from 'framer-motion'
+import { PageTitle } from '@components/common/PageTitle'
 
 // Import all gallery images
 import mainShot from '@/assets/images/Main_Shot.jpg'
@@ -112,6 +113,7 @@ const galleryImages = [
 export function GalleryPage() {
   return (
     <div className="bg-white">
+      <PageTitle title="Gallery" />
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-gray-50 to-white py-16 md:py-24">
         <div className="container-custom">

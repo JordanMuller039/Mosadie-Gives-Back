@@ -7,6 +7,7 @@ authenticated users to their appropriate dashboard.
 import { useState, FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@context/AuthContext'
+import { PageTitle } from '@components/common/PageTitle'
 
 export function LoginPage() {
   const [email, setEmail] = useState('')
@@ -34,6 +35,7 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center p-4">
+      <PageTitle title="Staff Login" />
       <div className="bg-white rounded-lg shadow-2xl p-8 w-full max-w-md">
         <h1 className="text-3xl font-heading font-bold text-gray-900 mb-6 text-center">
           Staff Login

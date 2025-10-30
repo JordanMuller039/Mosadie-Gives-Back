@@ -4,12 +4,14 @@ This page is only accessible to users with the admin role.
 */
 
 import { useAuth } from '@context/AuthContext'
+import { PageTitle } from '@components/common/PageTitle'
 
 export function AdminDashboard() {
   const { user } = useAuth()
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <PageTitle title="Admin Dashboard" />
       <div className="container-custom py-8">
         <h1 className="text-3xl font-heading font-bold text-gray-900 mb-4">Admin Dashboard</h1>
         <p className="text-gray-600 mb-8">Welcome back, {user?.firstName}!</p>

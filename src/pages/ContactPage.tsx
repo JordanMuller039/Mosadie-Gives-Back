@@ -6,6 +6,7 @@ Features a contact form with validation and contact information display.
 import { ContactForm } from '@components/forms/ContactForm'
 import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, Clock } from 'lucide-react'
+import { PageTitle } from '@components/common/PageTitle'
 
 // Import contact image
 import kidsImage from '@/assets/images/Dishing_Food_3.jpg'
@@ -18,6 +19,7 @@ export function ContactPage() {
 
 return (
   <div className="bg-white">
+    <PageTitle title="Contact Us" />
     {/* Hero Section */}
     <section className="bg-gradient-to-b from-gray-50 to-white py-16 md:py-20">
       <div className="container-custom">

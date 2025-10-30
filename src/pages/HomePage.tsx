@@ -3,9 +3,11 @@ The main landing page of the application.
 Features a hero carousel, mission statement, and calls to action.
 */
 
+import { PageTitle } from '@components/common/PageTitle'
 import { Link } from 'react-router-dom'
 import { Carousel } from '@components/common/Carousel'
 import { Heart, Users, Target } from 'lucide-react'
+
 
 // Import carousel images
 import mainShot from '@/assets/images/Main_Shot.jpg'
@@ -35,6 +37,7 @@ const carouselImages = [
 export function HomePage() {
   return (
     <div>
+      <PageTitle />
       {/* Hero Carousel */}
       <Carousel images={carouselImages} />
 
