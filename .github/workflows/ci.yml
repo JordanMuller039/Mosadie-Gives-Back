@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  
+          fetch-depth: 0  # Shallow clones disabled for SonarCloud
       
       - uses: actions/setup-node@v4
         with:
@@ -35,5 +35,11 @@ jobs:
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}    
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=JordanMuller039_Mosadie-Gives-Back
+            -Dsonar.organization=jordanmuller039
+            -Dsonar.sources=src
+            -Dsonar.exclusions=**/node_modules/**,**/*.test.ts,**/*.test.tsx,build/**,dist/**
