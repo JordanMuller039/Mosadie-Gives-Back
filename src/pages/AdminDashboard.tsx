@@ -9,10 +9,13 @@ import { AdminNav } from '@components/admin/AdminNav'
 import { AdminLayout } from '@components/admin/AdminLayout'
 import { ProjectsTable } from '@components/admin/ProjectsTable'
 import { ProjectFormModal } from '@components/admin/ProjectFormModal'
+import { StaffTable } from '@components/admin/StaffTable'
+import { StaffFormModal } from '@components/admin/StaffFormModal'
 import { DeleteConfirmModal } from '@components/admin/DeleteConfirmModal'
 import { useAuth } from '@context/AuthContext'
 import { Navigate } from 'react-router-dom'
 import { projectsService, type Project } from '@services/supabase/projects'
+import { staffService, type StaffMember } from '@services/supabase/staff'
 import { Plus } from 'lucide-react'
 
 type AdminTab = 'projects' | 'staff' | 'volunteers' | 'donations'
@@ -31,6 +34,13 @@ export function AdminDashboard() {
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
+  // Staff state
+  const [staff, setStaff] = useState<StaffMember[]>([])
+  const [isLoadingStaff, setIsLoadingStaff] = useState(true)
+  const [isStaffModalOpen, setIsStaffModalOpen] = useState(false)
+  const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null)
+  const [staffToDelete, setStaffToDelete] = useState<StaffMember | null>(null)
+
   // Load projects
   useEffect(() => {
     if (activeTab === 'projects') {
@@ -38,11 +48,17 @@ export function AdminDashboard() {
     }
   }, [activeTab])
 
+  // Load staff
+  useEffect(() => {
+    if (activeTab === 'staff') {
+      loadStaff()
+    }
+  }, [activeTab])
+
   // Redirect non-admin users
   if (!user || user.role !== 'admin') {
     return <Navigate to="/" replace />
   }
-
 
   const loadProjects = async () => {
     try {
@@ -56,6 +72,19 @@ export function AdminDashboard() {
     }
   }
 
+  const loadStaff = async () => {
+    try {
+      setIsLoadingStaff(true)
+      const data = await staffService.getAllStaff()
+      setStaff(data)
+    } catch (error) {
+      console.error('Error loading staff:', error)
+    } finally {
+      setIsLoadingStaff(false)
+    }
+  }
+
+  // Project handlers
   const handleCreateProject = () => {
     setSelectedProject(null)
     setIsProjectModalOpen(true)
@@ -105,12 +134,12 @@ export function AdminDashboard() {
     }
   }
 
-  const handleDeleteClick = (project: Project) => {
+  const handleDeleteProjectClick = (project: Project) => {
     setProjectToDelete(project)
     setIsDeleteModalOpen(true)
   }
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteProjectConfirm = async () => {
     if (!projectToDelete) return
 
     try {
@@ -122,6 +151,86 @@ export function AdminDashboard() {
     } catch (error) {
       console.error('Error deleting project:', error)
       alert('Failed to delete project. Please try again.')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  // Staff handlers
+  const handleCreateStaff = () => {
+    setSelectedStaff(null)
+    setIsStaffModalOpen(true)
+  }
+
+  const handleEditStaff = (member: StaffMember) => {
+    setSelectedStaff(member)
+    setIsStaffModalOpen(true)
+  }
+
+  const handleStaffSubmit = async (data: {
+    email: string
+    password?: string
+    first_name: string
+    last_name: string
+    phone?: string
+    role: 'admin' | 'employee'
+  }) => {
+    try {
+      setIsSubmitting(true)
+
+      if (selectedStaff) {
+        // Update existing staff
+        await staffService.updateStaff(selectedStaff.id, {
+        first_name: data.first_name,
+        last_name: data.last_name,
+        phone: data.phone || undefined,
+        role: data.role,
+      })
+
+      } else {
+        // Create new staff
+        if (!data.password) {
+          alert('Password is required for new staff members')
+          return
+        }
+        await staffService.createStaff({
+          email: data.email,
+          password: data.password,
+          first_name: data.first_name,
+          last_name: data.last_name,
+          phone: data.phone,
+          role: data.role,
+        })
+      }
+
+      await loadStaff()
+      setIsStaffModalOpen(false)
+      setSelectedStaff(null)
+    } catch (error) {
+      console.error('Error saving staff:', error)
+      alert('Failed to save staff member. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleDeleteStaffClick = (member: StaffMember) => {
+    setStaffToDelete(member)
+    setIsDeleteModalOpen(true)
+  }
+
+  const handleDeleteStaffConfirm = async () => {
+    if (!staffToDelete) return
+
+    try {
+      setIsDeleting(true)
+      await staffService.deleteStaff(staffToDelete.id)
+      await loadStaff()
+      setIsDeleteModalOpen(false)
+      setStaffToDelete(null)
+    } catch (error) {
+      console.error('Error deleting staff:', error)
+      alert('Failed to delete staff member. Please try again.')
     } finally {
       setIsDeleting(false)
     }
@@ -165,7 +274,7 @@ export function AdminDashboard() {
             <ProjectsTable
               projects={projects}
               onEdit={handleEditProject}
-              onDelete={handleDeleteClick}
+              onDelete={handleDeleteProjectClick}
               isLoading={isLoadingProjects}
             />
           </AdminLayout>
@@ -176,14 +285,21 @@ export function AdminDashboard() {
             title="Staff Members"
             description="Manage staff accounts and permissions"
             actions={
-              <button className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-smooth">
+              <button
+                onClick={handleCreateStaff}
+                className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-smooth flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
                 Add Staff Member
               </button>
             }
           >
-            <div className="bg-white rounded-lg shadow p-6">
-              <p className="text-gray-500">Staff management coming soon...</p>
-            </div>
+            <StaffTable
+              staff={staff}
+              onEdit={handleEditStaff}
+              onDelete={handleDeleteStaffClick}
+              isLoading={isLoadingStaff}
+            />
           </AdminLayout>
         )}
 
@@ -219,15 +335,31 @@ export function AdminDashboard() {
         isSubmitting={isSubmitting}
       />
 
+      <StaffFormModal
+        isOpen={isStaffModalOpen}
+        onClose={() => {
+          setIsStaffModalOpen(false)
+          setSelectedStaff(null)
+        }}
+        onSubmit={handleStaffSubmit}
+        staff={selectedStaff}
+        isSubmitting={isSubmitting}
+      />
+
       <DeleteConfirmModal
         isOpen={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false)
           setProjectToDelete(null)
+          setStaffToDelete(null)
         }}
-        onConfirm={handleDeleteConfirm}
-        title="Delete Project"
-        message={`Are you sure you want to delete "${projectToDelete?.project_name}"? This action cannot be undone.`}
+        onConfirm={projectToDelete ? handleDeleteProjectConfirm : handleDeleteStaffConfirm}
+        title={projectToDelete ? 'Delete Project' : 'Delete Staff Member'}
+        message={
+          projectToDelete
+            ? `Are you sure you want to delete "${projectToDelete?.project_name}"? This action cannot be undone.`
+            : `Are you sure you want to delete "${staffToDelete?.first_name} ${staffToDelete?.last_name}"? This action cannot be undone.`
+        }
         isDeleting={isDeleting}
       />
     </div>
